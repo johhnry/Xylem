@@ -1,4 +1,5 @@
 ![Xylem logo](img/xylem_botanist_render_2_large_crop.png)
+![Xylem logo](img/xylem_logo.png)
 
 # Xylem
 Xylem is a FLOSS (Free Libre and Open Source) 3d game created with Godot Engine.
