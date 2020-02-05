@@ -4,6 +4,14 @@
 # Xylem
 Xylem is a FLOSS (Free Libre and Open Source) 3d game created with Godot Engine (v3.1.2).
 
+<p align="center">
+  <img src="img/botanist_day_scene.png">
+</p>
+
+<p align="center">
+  <img src="img/botanist_night_scene.png">
+</p>
+
 ### Character
 In Xylem, you embody a botanist explorator whose purpose is to gather new plant species.
 
