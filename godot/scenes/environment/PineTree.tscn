@@ -1,0 +1,15 @@
+[gd_scene load_steps=4 format=2]
+
+[ext_resource path="res://assets/pine_tree/pine_tree.escn" type="PackedScene" id=1]
+[ext_resource path="res://scenes/environment/PineTree.gd" type="Script" id=2]
+
+[sub_resource type="CylinderShape" id=1]
+radius = 0.217729
+height = 0.907171
+
+[node name="PineTree" instance=ExtResource( 1 )]
+script = ExtResource( 2 )
+
+[node name="CollisionShape" type="CollisionShape" parent="." index="1"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.454268, 0 )
+shape = SubResource( 1 )
