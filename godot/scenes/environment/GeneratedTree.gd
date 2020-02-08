@@ -2,15 +2,14 @@ extends MeshInstance
 
 func _ready():
 	#Creating the L-System and adding rules
-	var lsystem = LSystem.new("X", deg2rad(60))
-	lsystem.add_rule(Rule.new("X", "F[-X][+X]F[X]"))
+	var lsystem = LSystem.new("X", deg2rad(20))
+	lsystem.add_rule(Rule.new("X", "F-[XFX]+[FFX--FX]"))
 	
-	lsystem.steps(4)
-	print(lsystem.depth())
+	lsystem.steps(3)
 	mesh = lsystem.generate_mesh(Transform.IDENTITY)
 	
 	#Animate the tree scale
-	animate_scale(1, log(lsystem.size()))
+	animate_scale(randf()+0.5, log(lsystem.size()))
 
 """
 Animate the scale of the tree
@@ -111,7 +110,7 @@ class LSystem:
 		var new_transform = transf
 		var new_basis = new_transform.basis
 		new_basis = new_basis.rotated(new_basis.z, angle)
-		new_basis = new_basis.rotated(new_basis.y, randf()*PI/4)
+		new_basis = new_basis.rotated(new_basis.y, randf()*PI/2)
 		new_basis = new_basis.rotated(new_basis.x, randf()*PI/4) 
 		return Transform(new_basis, transf.origin)
 	
@@ -131,10 +130,10 @@ class LSystem:
 				#Move forward
 				"F":
 					var tree_depth = radius_stack.back()
-					var branch_length = 3/tree_depth
-					var radius = [0.2/tree_depth, 0.2/(tree_depth+radius_decr)]
-					var colors = [Color(0, 1.0/tree_depth, 0), Color(0, 1.0/(tree_depth+radius_decr), 0)]
-					draw_branch(mesh, stack.back(), branch_length, radius, colors, 4)
+					var branch_length = 2.4/tree_depth
+					var radius = [0.2/(tree_depth*1.2), 0.2/(tree_depth*1.2+radius_decr)]
+					var colors = [Color(1, 0.5/tree_depth, randf()), Color(randf(), 1.0/(tree_depth+radius_decr), 0)]
+					draw_branch(mesh, stack.back(), branch_length, radius, colors, 10)
 					
 					var new_transform = stack.back()
 					new_transform = new_transform.translated(Vector3(0, branch_length, 0))
@@ -144,10 +143,10 @@ class LSystem:
 				
 				#Rotate on positive direction
 				"+":
-					stack[stack.size()-1] = rotate_transform_basis(stack.back(), angle *(radius_stack.back()/10))
+					stack[stack.size()-1] = rotate_transform_basis(stack.back(), angle)
 				
 				"-":
-					stack[stack.size()-1] = rotate_transform_basis(stack.back(), -angle*(radius_stack.back()/10))
+					stack[stack.size()-1] = rotate_transform_basis(stack.back(), -angle)
 				
 				#Save current transform
 				"[":

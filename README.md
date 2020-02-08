@@ -19,6 +19,12 @@ In Xylem, you embody a botanist explorator whose purpose is to gather new plant 
   <img src="img/GIF_botanist_turn_table_animations.gif">
 </p>
 
+### Plants and trees
+WIP of the L-System implementation : screenshots
+
+![trees wip](img/trees_wip_1.png)
+![trees wip](img/trees_wip_2.png)
+
 ## Installation
 Use `git clone https://github.com/johhnry/Xylem` to clone the repo.
 

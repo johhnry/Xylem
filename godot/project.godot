@@ -17,6 +17,7 @@ _global_script_class_icons={
 
 config/name="Xylem"
 run/main_scene="res://DefaultScene.tscn"
+boot_splash/image="res://xylem_icon.png"
 config/icon="res://icon.png"
 
 [display]
