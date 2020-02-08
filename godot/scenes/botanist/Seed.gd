@@ -9,7 +9,7 @@ func _ready():
 	tree_scene = load("res://scenes/environment/GeneratedTree.tscn")
 
 func _process(delta):
-	if (OS.get_ticks_msec() - life) > 2000:
+	if (OS.get_ticks_msec() - life) > 1500:
 		var tree = tree_scene.instance()
 		var x = get_transform().origin.x
 		var z = get_transform().origin.z

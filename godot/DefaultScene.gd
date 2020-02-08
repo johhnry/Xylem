@@ -3,10 +3,9 @@ extends Spatial
 var pine_tree = load("res://scenes/environment/PineTree.tscn")
 
 func _ready():
-	instance_trees(20)
+	instance_trees(10, 50)
 
-func instance_trees(n):
-	var area = 10
+func instance_trees(n: int, area: int) -> void:
 	for i in range(n):
 		var tree = pine_tree.instance()
 		var tree_transform = tree.get_transform()

@@ -4,8 +4,10 @@
 
 [sub_resource type="SpatialMaterial" id=1]
 vertex_color_use_as_albedo = true
+params_cull_mode = 2
 
 [node name="GeneratedTree" type="MeshInstance"]
+editor/display_folded = true
 material_override = SubResource( 1 )
 script = ExtResource( 1 )
 
