@@ -2,14 +2,16 @@ extends MeshInstance
 
 func _ready():
 	#Creating the L-System and adding rules
-	var lsystem = LSystem.new("X", deg2rad(20))
-	lsystem.add_rule(Rule.new("X", "F-[XFX]+[FFX--FX]"))
+	var lsystem = LSystem.new("X", deg2rad(10))
+	var rule:Rule = Rule.random_rule("X", 5, 0.9)
+	print(rule.to_string())
+	lsystem.add_rule(rule)
+	lsystem.steps(4)
 	
-	lsystem.steps(3)
 	mesh = lsystem.generate_mesh(Transform.IDENTITY)
 	
 	#Animate the tree scale
-	animate_scale(randf()+0.5, log(lsystem.size()))
+	animate_scale(1, log(lsystem.size()))
 
 """
 Animate the scale of the tree
@@ -106,12 +108,12 @@ class LSystem:
 		st.generate_normals()
 		st.commit(mesh)
 	
-	func rotate_transform_basis(transf: Transform, angle: float) -> Transform:
+	func rotate_transform_basis(transf: Transform, angles: Vector3) -> Transform:
 		var new_transform = transf
 		var new_basis = new_transform.basis
-		new_basis = new_basis.rotated(new_basis.z, angle)
-		new_basis = new_basis.rotated(new_basis.y, randf()*PI/2)
-		new_basis = new_basis.rotated(new_basis.x, randf()*PI/4) 
+		new_basis = new_basis.rotated(Vector3.RIGHT, angles.x)
+		new_basis = new_basis.rotated(Vector3.UP, angles.y)
+		new_basis = new_basis.rotated(Vector3.BACK, angles.z)
 		return Transform(new_basis, transf.origin)
 	
 	func generate_mesh(initial_transform: Transform) -> ArrayMesh:
@@ -121,7 +123,7 @@ class LSystem:
 		#The stack is storing the transforms
 		var stack = [initial_transform]
 		var initial_radius = 1
-		var radius_decr = 0.8
+		var radius_decr = 0.9
 		var radius_stack = [initial_radius]
 		
 		#We iterate through the string
@@ -132,8 +134,11 @@ class LSystem:
 					var tree_depth = radius_stack.back()
 					var branch_length = 2.4/tree_depth
 					var radius = [0.2/(tree_depth*1.2), 0.2/(tree_depth*1.2+radius_decr)]
-					var colors = [Color(1, 0.5/tree_depth, randf()), Color(randf(), 1.0/(tree_depth+radius_decr), 0)]
-					draw_branch(mesh, stack.back(), branch_length, radius, colors, 10)
+					
+					var rgb_vec = stack.back().basis.get_euler()
+					var color = Color(cos(rgb_vec.x), cos(rgb_vec.y), cos(rgb_vec.z))
+					var colors = [color, color]#[Color(1/tree_depth, 0, 0.5/tree_depth), Color(0.6, 1.0/(tree_depth+radius_decr), 0)]
+					draw_branch(mesh, stack.back(), branch_length, radius, colors, 4)
 					
 					var new_transform = stack.back()
 					new_transform = new_transform.translated(Vector3(0, branch_length, 0))
@@ -141,12 +146,29 @@ class LSystem:
 					
 					radius_stack[radius_stack.size()-1] = tree_depth + radius_decr
 				
-				#Rotate on positive direction
+				#X + rot
 				"+":
-					stack[stack.size()-1] = rotate_transform_basis(stack.back(), angle)
+					stack[stack.size()-1] = rotate_transform_basis(stack.back(), Vector3(angle, 0, 0))
 				
+				#X- rot
 				"-":
-					stack[stack.size()-1] = rotate_transform_basis(stack.back(), -angle)
+					stack[stack.size()-1] = rotate_transform_basis(stack.back(), Vector3(-angle, 0, 0))
+				
+				#Y+ rot
+				"<":
+					stack[stack.size()-1] = rotate_transform_basis(stack.back(), Vector3(0, angle, 0))
+				
+				#Y- rot
+				">":
+					stack[stack.size()-1] = rotate_transform_basis(stack.back(), Vector3(0, -angle, 0))
+				
+				#Z+ rot 
+				"&":
+					stack[stack.size()-1] = rotate_transform_basis(stack.back(), Vector3(0, 0, angle))
+				
+				#Z- rot
+				"^":
+					stack[stack.size()-1] = rotate_transform_basis(stack.back(), Vector3(0, 0, -angle))
 				
 				#Save current transform
 				"[":
@@ -184,8 +206,36 @@ class Rule:
 		self.pattern = pattern
 		self.replace = replace
 	
+	static func switch(a: String, b: String, p: float) -> String:
+		if(randf() < p): return a 
+		else: return b
+	
+	static func random_pattern(depth: int, depth_p: float) -> String:
+		if(depth == 0): 
+			var operator = ""
+			if(randf()<0.4): operator = switch("+", "-", 0.5)
+			elif(randf()<0.1): operator = switch("&", "^", 0.5)
+			return operator + switch("F", "X", depth_p)
+		else:
+			var branches = ""
+			for i in range(rand_range(1, depth)):
+				if(randf()<0.4):
+					branches += "[" + random_pattern(depth-1, depth_p+0.05) + "]"
+				else:
+					branches += random_pattern(depth-1, depth_p)
+			return random_pattern(0, depth_p+0.05) + branches
+	
+	static func random_rule(pattern: String, depth: int, depth_p: float) -> Rule:
+		return Rule.new(pattern, random_pattern(depth, depth_p))
+	
+	func set_random_replace(depth: int) -> void:
+		replace
+	
 	func get_pattern() -> String:
 		return pattern
 	
 	func get_replace() -> String:
 		return replace
+	
+	func to_string() -> String:
+		return "[ Pattern \""+pattern+"\" -> \""+replace+"\" ]"
