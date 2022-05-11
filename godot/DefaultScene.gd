@@ -1,9 +1,9 @@
 extends Spatial
 
-var pine_tree = load("res://scenes/environment/GeneratedTree.tscn")
+var pine_tree = load("res://scenes/environment/PineTree.tscn")
 
 func _ready():
-	#instance_trees(10, 10)
+	instance_trees(10, 10)
 	pass
 
 func instance_trees(n: int, area: int) -> void:

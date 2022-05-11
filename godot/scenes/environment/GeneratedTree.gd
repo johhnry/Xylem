@@ -2,9 +2,10 @@ extends MeshInstance
 
 func _ready():
 	#Creating the L-System and adding rules
-	var lsystem = LSystem.new("X", deg2rad(10))
-	var rule:Rule = Rule.random_rule("X", 5, 0.9)
+	var lsystem = LSystem.new("X", deg2rad(20))
+	var rule:Rule = Rule.random_rule("X", 5, 0.85)
 	print(rule.to_string())
+
 	lsystem.add_rule(rule)
 	lsystem.steps(4)
 	
@@ -137,7 +138,7 @@ class LSystem:
 					
 					var rgb_vec = stack.back().basis.get_euler()
 					var color = Color(cos(rgb_vec.x), cos(rgb_vec.y), cos(rgb_vec.z))
-					var colors = [color, color]#[Color(1/tree_depth, 0, 0.5/tree_depth), Color(0.6, 1.0/(tree_depth+radius_decr), 0)]
+					var colors = [Color(1 / tree_depth, 0, 0.5 / tree_depth), Color(0.6, 1.0 / (tree_depth + radius_decr), 1 / tree_depth)]
 					draw_branch(mesh, stack.back(), branch_length, radius, colors, 4)
 					
 					var new_transform = stack.back()
@@ -214,22 +215,20 @@ class Rule:
 		if(depth == 0): 
 			var operator = ""
 			if(randf()<0.4): operator = switch("+", "-", 0.5)
-			elif(randf()<0.1): operator = switch("&", "^", 0.5)
+			elif(randf()<0.3): operator = switch("&", "^", 0.5)
+			elif(randf() < 0.2): operator = switch("<", ">", 0.5)
 			return operator + switch("F", "X", depth_p)
 		else:
 			var branches = ""
 			for i in range(rand_range(1, depth)):
 				if(randf()<0.4):
-					branches += "[" + random_pattern(depth-1, depth_p+0.05) + "]"
+					branches += "[" + random_pattern(depth-1, depth_p + 0.1) + "]"
 				else:
 					branches += random_pattern(depth-1, depth_p)
 			return random_pattern(0, depth_p+0.05) + branches
 	
 	static func random_rule(pattern: String, depth: int, depth_p: float) -> Rule:
 		return Rule.new(pattern, random_pattern(depth, depth_p))
-	
-	func set_random_replace(depth: int) -> void:
-		replace
 	
 	func get_pattern() -> String:
 		return pattern
